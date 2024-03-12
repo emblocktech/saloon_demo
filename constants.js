@@ -4,7 +4,7 @@ const DB = {
     pwd: "root",
     host: "localhost",
     port: 5432,
-    dialect: "postgres"
-}
+    dialect: "postgres",
+};
 
-export default { DB }
+export default { DB };

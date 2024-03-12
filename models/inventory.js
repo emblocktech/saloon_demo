@@ -1,9 +1,8 @@
 import { DataTypes } from "sequelize";
-import db from "../db.js"
+import db from "../db.js";
 
-let Inventory = null
-
-const get = () => {
+let Inventory = null;
+const get = async () => {
     if (Inventory) return Inventory;
     Inventory = db.define("inventory", {
         id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -11,8 +10,8 @@ const get = () => {
         quantityincrease: { type: DataTypes.INTEGER, allowNull: false },
         currentquantity: { type: DataTypes.INTEGER, allowNull: false },
     });
-    db.sync({force: true}).then(() => {})
-    return Inventory
-}
-
+    await Inventory.sync({ force: false });
+    return Inventory;
+};
+// get()
 export default get;

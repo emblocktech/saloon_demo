@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
-import db from "../db.js"
+import db from "../db.js";
 
-let Service = null
+let Service = null;
 
-const get = () => {
+const get = async () => {
     if (Service) return Service;
     Service = db.define("service", {
         id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -11,8 +11,8 @@ const get = () => {
         serviceno: { type: DataTypes.INTEGER, allowNull: false, unique: true },
         price: { type: DataTypes.FLOAT, allowNull: false },
     });
-    db.sync({force: true}).then(() => {})
-    return Service
-}
+    await Service.sync({ force: false });
+    return Service;
+};
 
 export default get;
