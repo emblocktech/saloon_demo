@@ -1,9 +1,9 @@
 import { DataTypes } from "sequelize";
-import db from "../db.js"
+import db from "../db.js";
 
-let User = null
+let User = null;
 
-const get = () => {
+const get = async () => {
     if (User) return User;
     User = db.define("user", {
         id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
@@ -11,8 +11,7 @@ const get = () => {
         phonenumber: { type: DataTypes.TEXT, allowNull: false, unique: true },
         points: { type: DataTypes.INTEGER, allowNull: false, unique: true },
     });
-    db.sync({force: true}).then(() => {})
-    return User
-}
-
+    await User.sync({ force: false });
+    return User;
+};
 export default get;
