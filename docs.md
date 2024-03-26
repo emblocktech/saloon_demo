@@ -1,37 +1,35 @@
 
 # Products Endpoints
 
-This Express routing file defines routes for handling requests related to products. The following are the endpoints and their descriptions:
-
 ## Get all products
 
-The `/products` endpoint returns all products in the database.
+The `/product` endpoint returns all products in the database.
 
 ## Get products by category
 
-The `/categories` endpoint returns all products that belong to the specified categories.
+The `/product/categories` endpoint returns all products that belong to the specified categories.
 
 ## Create a new product
 
-The `/products` POST endpoint creates a new product in the database with the provided data.
+The `/product` POST endpoint creates a new product in the database with the provided data.
 
 ## Bulk create products
 
-The `/bulk` POST endpoint creates multiple products in the database at once using an array of data objects.
+The `/product/bulk` POST endpoint creates multiple products in the database at once using an array of data objects.
 
-## Update a product
+## Update products
 
-The `/` PUT endpoint updates a single product in the database with the provided data.
+The `/product` PUT endpoint updates a list of products in the database with the provided data.
 
-## Delete a product
+## Delete products
 
-The `/` DELETE endpoint deletes a single product from the database based on its item number.
+The `/product` DELETE endpoint deletes a list of products from the database based on its item number.
 
 Here are some examples of how to use these endpoints:
 
 ### Get all products
 
-Request: `http://localhost:300/product`
+Request: `http://<server_ip>:3000/product`
 Response: {<br>
     "success": true,<br>
     "message": "Products fetched successfully",<br>
@@ -69,7 +67,7 @@ Response: {<br>
 
 ### Get products by category
 
-Request: `http://localhost:300/product/categories`<br>
+Request: `http://<server_ip>:3000/product/categories`<br>
 json object: `[{category:"Game"},{category:"Electronics"}, ...]`<br>
 Response: {<br>
     "success": true,<br>
@@ -94,7 +92,7 @@ Response: {<br>
 
 ### Create a new product
 
-Request: `http://localhost:300/products`<br>
+Request: `http://<server_ip>:3000/products`<br>
 input json object:{<br>
   "itemNo": "A-1234",<br>
   "itemName": "Apple iPhone 12 Pro",<br>
@@ -109,7 +107,7 @@ input json object:{<br>
 
 ### Bulk create products
 
-Request: `http://localhost:300/product/bulk?ids=["Electronics", "Gadgets"]&names=["Product%201","Product%202"]&prices= [15.99, 9.99]`
+Request: `http://<server_ip>:3000/product/bulk?ids=["Electronics", "Gadgets"]&names=["Product%201","Product%202"]&prices= [15.99, 9.99]`
 
 input json object:
 [<br>{<br>
@@ -136,7 +134,7 @@ input json object:
 
 ### Update products
 
-Request: `http://localhost:300/product`<br>
+Request: `http://<server_ip>:3000/product`<br>
 input json object: [<br>{<br>
   "itemNo": "A-1234",<br>
   "itemName": "Apple iPhone 12 Pro",<br>
@@ -162,7 +160,7 @@ input json object: [<br>{<br>
 
 ### Delete products
 
-Request: `http://localhost:300/product`<br>
+Request: `http://<server_ip>:3000/product`<br>
 input json object:[<br>{<br>
     "itemNo":"A-1234",<br>
 },<br>{<br>
