@@ -107,7 +107,7 @@ input json object:{<br>
 
 ### Bulk create products
 
-Request: `http://<server_ip>:3000/product/bulk?ids=["Electronics", "Gadgets"]&names=["Product%201","Product%202"]&prices= [15.99, 9.99]`
+Request: `http://<server_ip>:3000/product/bulk`
 
 input json object:
 [<br>{<br>
