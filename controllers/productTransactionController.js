@@ -14,6 +14,9 @@ router.post("/", async (req, res) => {
       itemName: itemName,
       quantity: quantity,
       billNo: billNo,
+      parameter: data.parameter,
+      category: data.category,
+      location: data.location,
     };
 
     const transaction = await ProductTransaction.create(transactionData);

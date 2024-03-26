@@ -15,6 +15,7 @@
 //       price: { type: DataTypes.FLOAT, allowNull: false },
 //       discount: { type: DataTypes.FLOAT, allowNull: false },
 //       amount: { type: DataTypes.FLOAT, allowNull: false },
+//       location: { type: DataTypes.TEXT, allowNull: false },
 //     },
 //     {
 //       freezeTableName: true,

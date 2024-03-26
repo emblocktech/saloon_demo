@@ -9,6 +9,7 @@ const get = async () => {
       servicename: { type: DataTypes.TEXT, allowNull: false, unique: true },
       serviceno: { type: DataTypes.INTEGER, allowNull: false, unique: true },
       price: { type: DataTypes.FLOAT, allowNull: false },
+      location: { type: DataTypes.TEXT, allowNull: false },
     },
     {
       freezeTableName: true,

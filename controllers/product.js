@@ -27,6 +27,9 @@ router.post("/", async (req, res) => {
       itemNo: data.itemNo,
       itemName: data.itemName,
       quantity: data.quantity,
+      parameter: data.parameter,
+      category: data.category,
+      location: data.location,
       price: data.price,
       sold: data.sold,
       discount: data.discount || 0, // Set discount to 0 if not provided
@@ -42,6 +45,41 @@ router.post("/", async (req, res) => {
     console.error("Error creating product:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+// bulk create operation - POST /products/bulk
+
+router.post("/bulk", async (req, res) => {
+  try {
+    const datas = req.body;
+    const productModel = await Product();
+    const productDatas = datas.map(data => {
+      return {
+        itemNo: data.itemNo,
+        itemName: data.itemName,
+        quantity: data.quantity,
+        parameter: data.parameter,
+        category: data.category,
+        price: data.price,
+        sold: data.sold,
+        location: data.location,
+        discount: data.discount || 0, // Set discount to 0 if not provided
+      };
+    });
+    productModel.bulkCreate(productDatas);
+    res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: {
+        status: "success",
+        message: "Products created successfully",
+        noOfProducts: productDatas.length,
+      },
+    });
+   }
+  catch (error) {
+        console.error("Error creating product:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 // Update operation - PUT /products
 router.put("/", async (req, res) => {

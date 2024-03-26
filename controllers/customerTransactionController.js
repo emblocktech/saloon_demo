@@ -14,6 +14,7 @@ router.post("/", async (req, res) => {
       customerPoints,
       billNo,
       billAmount,
+      location
     } = req.body;
     const transactionData = {
       empID: empID,
@@ -22,6 +23,7 @@ router.post("/", async (req, res) => {
       customerPoints: customerPoints,
       billNo: billNo,
       billAmount: billAmount,
+      location: location,
     };
 
     const transaction = await CustomerTransaction.create(transactionData);

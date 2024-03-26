@@ -2,7 +2,7 @@ const DB = {
     database: "saloon",
     username: "postgres",
     pwd: "root",
-    host: "localhost",
+    host: "167.71.239.134",
     port: 5432,
     dialect: "postgres",
 };

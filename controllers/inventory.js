@@ -27,8 +27,11 @@ router.post("/", async (req, res) => {
     const inventoryData = {
       itemno: data.itemno,
       itemname: data.itemname,
+      parameter: data.parameter,
+      category: data.category,
       sold: data.sold,
       available: data.available,
+      location: data.location,
     };
     const stock = await inventoryModel.create(inventoryData);
     res.status(201).json({

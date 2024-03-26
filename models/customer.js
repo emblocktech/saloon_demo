@@ -9,6 +9,7 @@ const get = async () => {
       customername: { type: DataTypes.TEXT, allowNull: false },
       phonenumber: { type: DataTypes.TEXT, allowNull: false },
       points: { type: DataTypes.INTEGER, allowNull: false },
+      
     },
     {
       timestamps: false, // Disable createdAt and updatedAt timestamps

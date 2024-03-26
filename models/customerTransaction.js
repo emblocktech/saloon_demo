@@ -12,6 +12,7 @@ const get = async () => {
       customerPoints: { type: DataTypes.INTEGER, allowNull: false },
       billNo: { type: DataTypes.STRING, allowNull: false, unique: true },
       billAmount: { type: DataTypes.FLOAT, allowNull: false },
+      location: { type: DataTypes.TEXT, allowNull: false },
     },
     { freezeTableName: true }
   );

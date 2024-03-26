@@ -6,11 +6,14 @@ const get = async () => {
     "product_transaction",
     {
       id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      category: {type:DataTypes.TEXT, allowNull: false, unique: false},
+      parameter: {type:DataTypes.TEXT, allowNull:false, unique: false},
       empID: { type: DataTypes.INTEGER, allowNull: false },
       itemNo: { type: DataTypes.STRING, allowNull: false },
       itemName: { type: DataTypes.STRING, allowNull: false },
       quantity: { type: DataTypes.INTEGER, allowNull: false },
       billNo: { type: DataTypes.STRING, allowNull: false },
+      location: { type: DataTypes.TEXT, allowNull: false },
     },
     { freezeTableName: true }
   );
