@@ -18,6 +18,28 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+// Read operation - GET /products/categories
+router.get("/categories", async (req, res) => {
+  try {
+    const productModel = await Product();
+    const categories = req.body.map((item) => {
+      return item.category;
+    });
+    const products = await productModel.findAll({
+      where: {
+        category: categories,
+      }
+    });
+    res.status(200).json({
+      success: true,
+      message: "Products fetched successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.error(`Error fetching products with category filter :`, error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // Create operation - POST /products
 router.post("/", async (req, res) => {
