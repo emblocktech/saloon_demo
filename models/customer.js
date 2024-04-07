@@ -8,6 +8,7 @@ const get = async () => {
       id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
       customername: { type: DataTypes.TEXT, allowNull: false },
       phonenumber: { type: DataTypes.TEXT, allowNull: false },
+      emailId: { type: DataTypes.TEXT, allowNull: false },
       points: { type: DataTypes.INTEGER, allowNull: false },
       
     },

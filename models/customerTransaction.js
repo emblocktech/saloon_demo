@@ -6,13 +6,14 @@ const get = async () => {
     "customer_transaction",
     {
       id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      empID: { type: DataTypes.INTEGER, allowNull: false },
+      empID: { type: DataTypes.TEXT, allowNull: false },
       customerName: { type: DataTypes.STRING, allowNull: false },
       customerPhoneNo: { type: DataTypes.STRING, allowNull: false },
       customerPoints: { type: DataTypes.INTEGER, allowNull: false },
       billNo: { type: DataTypes.STRING, allowNull: false, unique: true },
       billAmount: { type: DataTypes.FLOAT, allowNull: false },
       location: { type: DataTypes.TEXT, allowNull: false },
+      modeOfPay: { type: DataTypes.TEXT, allowNull: false },
     },
     { freezeTableName: true }
   );

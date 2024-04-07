@@ -3,30 +3,50 @@ import getUserModel from '../models/customer.js';
 import getProductModel from '../models/product.js';
 import getCustomerTransactionModel from '../models/customerTransaction.js';
 import getProductTransactionModel from '../models/productTransaction.js';
+import getAppInfoModel from '../models/appinfo.js';
+import nodemailer from "nodemailer";
+import fs from "fs";
+import ejs from "ejs";
+import path from "path";
 
 const router = express.Router();
+
+router.get("/count/total", async (req, res) => {
+	const AppInfo = await getAppInfoModel();
+	const app = await AppInfo.findByPk(1);
+	res.status(200).json({ success: true, billCount: app.dataValues.totBill })
+})
 
 router.post("/", async (req, res) => {
   try {
     // Extract data from request body
+    console.log(req.body)
     const {
       empID,
       customerName,
       customerPhoneNo,
       customerPoints,
+      emailId,
       billNo,
       billAmount,
-      bill
+      totGST,
+      bill,
+      modeOfPay,
+      location
     } = req.body;
+    
+    //Update Bill Count
+    
+    const AppInfo = await getAppInfoModel();
+	const app = await AppInfo.findByPk(1)
+	let cnt = app.dataValues.totBill + 1;
+	await app.update({ totBill: cnt })
 
     // Update customer points
     const Customer = await getUserModel();
+    
     const [customer, created] = await Customer.findOrCreate({
       where: { phonenumber: customerPhoneNo },
-      defaults: {
-        customername: customerName,
-        points: customerPoints
-      }
     });
     await customer.update({ points: customerPoints });
 
@@ -49,10 +69,25 @@ router.post("/", async (req, res) => {
           itemNo,
           itemName: item.itemName,
           quantity,
-          billNo
+          billNo,
+		  category: product.category,
+		  parameter: product.parameter,
+		  location
+        });
+      } else {
+      	await ProductTransaction.create({
+          empID,
+          itemNo,
+          itemName: item.itemName,
+          quantity,
+          billNo,
+		  category: "New",
+		  parameter: "New",
+		  location
         });
       }
     }
+    
 
     // Log customer transaction
     const CustomerTransaction = await getCustomerTransactionModel();
@@ -62,13 +97,77 @@ router.post("/", async (req, res) => {
       customerPhoneNo,
       customerPoints,
       billNo,
-      billAmount
+      billAmount,
+      modeOfPay,
+      location
     });
+    
+    const transporter = nodemailer.createTransport({
+	  service: "Gmail",
+	  host: "smtp.gmail.com",
+	  port: 465,
+	  secure: true,
+	  auth: {
+		user: "femigamarina@gmail.com",
+		pass: "ejms zxtj smgb owgr",
+	  },
+	});
+	
+	const date = new Date()
+	
+	const data = {
+		  "paymentInfo": {
+			"paymentMethod": "COD",
+			"taxInvoiceNumber": "IT2023001",
+			"gstNumber": "GL-0001-0002-0003",
+			"purchaseDate": date.toDateString(),
+			"orderTime": date.toLocaleTimeString(),
+			"retailerContactNumber1": "987654321",
+			"retailerContactNumber2": "4567890123",
+			"retailerMailId": "retailer@example.com"
+			},
+		  "paySummary": {
+			"gstTotal": totGST,
+			"amountTotal": billAmount,
+			"details": bill.map((val) => ({
+				productName: val.itemName,
+				productQuantity: val.quantity,
+				productPrice: val.price,
+				productDiscount: val.disc,
+				productGst: val.gst,
+				productAmount: val.amount
+			}))
+		}}
+		
+	const userInfo = {
+		moblieNumber: customer.phonenumber,
+		mailID: customer.emailId,
+		name: customer.customername,
+		address: ""
+	}
+	
+	ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, (err, html) => {
+		const mailOptions = {
+		  from: "femigamarina@gmail.com",
+		  to: customer.emailId,
+		  subject: "Bill Information",
+		  html: html,
+		};
+		
+		transporter.sendMail(mailOptions, (error, info) => {
+		  if (error) {
+			console.error("Error sending email: ", error);
+		  } else {
+			console.log("Email sent: ", info.response);
+		  }
+		});
+	})
+	
 
     res.status(200).json({ success: true, message: "Billing data processed successfully" });
   } catch (error) {
     console.error("Error processing billing data:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Please fill all the values" });
   }
 });
 

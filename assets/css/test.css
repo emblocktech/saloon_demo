@@ -1,0 +1,496 @@
+@font-face {
+  font-family: "Lora";
+  src: url("fonts/Lora-VariableFont_wght.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+*{
+  font-family: Lora;
+}
+.image-20-icon {
+  position: absolute;
+  top: 303px;
+  left: calc(50% - 169px);
+  width: 362px;
+  height: 198px;
+  object-fit: cover;
+  opacity: 0.25;
+}
+.cod,
+.payment-method {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 139px;
+  height: 17px;
+}
+.cod {
+  top: 25px;
+  left: 1.7px;
+  width: 52px;
+  height: 28px;
+}
+.payment-method-parent {
+  width: 139px;
+  position: relative;
+  height: 53px;
+}
+.in552r7,
+.tax-invoice-number {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 84.5px);
+  display: inline-block;
+  width: 169px;
+  height: 17px;
+}
+.in552r7 {
+  top: 25px;
+  left: calc(50% - 71.8px);
+  width: 145px;
+  height: 18px;
+}
+.tax-invoice-number-parent {
+  width: 169px;
+  position: relative;
+  height: 43px;
+  text-align: center;
+}
+.gst-number,
+.in552r71 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 110.5px;
+  height: 17px;
+}
+.in552r71 {
+  top: 25px;
+  left: -30px;
+  width: 64.7px;
+  height: 28px;
+}
+.gst-number-parent {
+  width: 110.5px;
+  position: relative;
+  height: 50px;
+  text-align: right;
+}
+.group-parent {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 372.25px);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 163px;
+}
+.frame-wrapper {
+  position: absolute;
+  top: 95px;
+  left: calc(50% - 372.7px);
+  width: 744.5px;
+  height: 53px;
+  text-align: left;
+}
+.urchace {
+  text-transform: lowercase;
+}
+.purchace-date {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 61px);
+  display: inline-block;
+  width: 122px;
+  height: 17px;
+}
+.mar-2024 {
+  position: absolute;
+  top: 24px;
+  left: calc(50% - 55px);
+}
+.purchace-date-parent {
+  width: 122px;
+  left: -5px;
+  position: relative;
+  height: 44px;
+}
+.order-time,
+.pm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 107px;
+  height: 17px;
+}
+.pm {
+  top: 24px;
+  left: 0px;
+  width: 90px;
+  height: 28px;
+  align-items: center;
+}
+.order-time-parent {
+  width: 107px;
+  position: relative;
+  height: 52px;
+  text-align: right;
+}
+.group-container {
+  position: absolute;
+  top: 155px;
+  left: calc(50% - 374px);
+  width: 472px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 200px;
+}
+.contact-number,
+.div,
+.email-id {
+  position: absolute;
+  top: 214px;
+  left: 72px;
+}
+.div,
+.email-id {
+  left: 427px;
+}
+.div {
+  top: 636px;
+  left: 651px;
+  font-size: 12px;
+  display: inline-block;
+  width: 72px;
+  height: 25px;
+}
+.phone {
+  position: relative;
+  margin: 0px;
+}
+.div1,
+.femigamarinagmailcom {
+  position: absolute;
+  top: 241px;
+  left: 72px;
+  text-align: left;
+}
+.femigamarinagmailcom {
+  left: 365px;
+}
+.image-20-parent {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 410px);
+  background-color: #fff;
+  width: 892px;
+  height: 1053px;
+  overflow: hidden;
+}
+.bill-to {
+  position: absolute;
+  top: 20px;
+  left: calc(50% - 52px);
+  display: inline-block;
+  text-align: center;
+  width: 130px;
+  height: 17px;
+}
+.address,
+.customers-name,
+.no10-12th-streettambaramch {
+  position: absolute;
+  top: 69px;
+  left: 0px;
+  display: inline-block;
+  width: 139px;
+  height: 17px;
+}
+.customers-name,
+.no10-12th-streettambaramch {
+  top: 25px;
+  font-size: var(--font-size-5xl);
+  width: 209px;
+  height: 28px;
+}
+.no10-12th-streettambaramch {
+  top: 94px;
+  left: 4px;
+  width: 207px;
+  height: 87px;
+}
+.contact-number1,
+.div2 {
+  position: absolute;
+  top: 0;
+  left: 68px;
+  display: inline-block;
+  width: 139px;
+  height: 17px;
+}
+.div2 {
+  top: 28px;
+  left: 0;
+  font-size: var(--font-size-5xl);
+  width: 207px;
+  height: 23px;
+}
+.contact-number-parent {
+  position: absolute;
+  top: 0;
+  left: 538px;
+  width: 207px;
+  height: 51px;
+  text-align: right;
+}
+.email-id1,
+.usermailgmailcom {
+  position: absolute;
+  top: 0;
+  left: 102px;
+  display: inline-block;
+  width: 139px;
+  height: 17px;
+}
+.usermailgmailcom {
+  top: 28px;
+  left: 0;
+  font-size: var(--font-size-5xl);
+  width: 241px;
+  height: 23px;
+}
+.email-id-parent {
+  position: absolute;
+  top: 69px;
+  left: 504px;
+  width: 241px;
+  height: 51px;
+  text-align: right;
+}
+.name-parent {
+  position: absolute;
+  top: 49px;
+  left: 73px;
+  width: 745px;
+  height: 181px;
+  font-size: var(--font-size-base);
+}
+.amount,
+.discount,
+.gst,
+.product-name,
+.qty,
+.rate,
+.sno {
+  width: 75px;
+  position: relative;
+  display: inline-block;
+  height: 25px;
+  flex-shrink: 0;
+}
+.amount,
+.discount,
+.gst,
+.product-name,
+.qty,
+.rate {
+  width: 178px;
+}
+.amount,
+.discount,
+.gst,
+.qty,
+.rate {
+  width: 66px;
+}
+.amount,
+.discount,
+.gst,
+.rate {
+  width: 68px;
+}
+.amount,
+.discount,
+.gst {
+  width: 125px;
+}
+.amount,
+.gst {
+  width: 58px;
+}
+.amount {
+  width: 97px;
+}
+.sno-parent {
+  position: absolute;
+  top: 305px;
+  left: 25px;
+  width: 842px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  text-align: center;
+}
+.black-tote,
+.div3,
+.div4,
+.div5,
+.div6 {
+  width: 64px;
+  position: relative;
+  display: inline-block;
+  height: 25px;
+  flex-shrink: 0;
+}
+.black-tote,
+.div4,
+.div5,
+.div6 {
+  width: 195px;
+}
+.div4,
+.div5,
+.div6 {
+  width: 37px;
+}
+.div5,
+.div6 {
+  width: 90px;
+}
+.div6 {
+  width: 102px;
+}
+.parent {
+  position: relative;
+  top: 360px;
+  left: 25px;
+  width: 842px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 29px;
+  text-align: center;
+  font-size: var(--font-size-xl);
+}
+.div9,
+.total {
+  top: 0;
+  display: inline-block;
+}
+.total {
+  position: absolute;
+  left: 0;
+  width: 102px;
+  height: 25px;
+}
+.div9 {
+  left: 131px;
+  text-align: right;
+  width: 525px;
+}
+.div10,
+.div9,
+.total-parent {
+  position: absolute;
+  height: 25px;
+}
+.div10 {
+  top: 0;
+  left: 699px;
+  text-align: center;
+  display: inline-block;
+  width: 110px;
+}
+.total-parent {
+  top: 446px;
+  left: 39px;
+  width: 842px;
+}
+.months-warranty-bought-container {
+  position: absolute;
+  top: 510px;
+  left: 39px;
+  font-size: var(--font-size-xl);
+  display: inline-block;
+  width: 797px;
+  height: 177px;
+}
+.terms-conditions,
+.thank-you-and {
+  position: absolute;
+  display: inline-block;
+  height: 25px;
+}
+.terms-conditions {
+  top: 488px;
+  left: 40px;
+  width: 273px;
+}
+.thank-you-and {
+  top: 740px;
+  left: calc(50% - 229px);
+  width: 456px;
+}
+.group-child {
+  position: absolute;
+  top: -0.5px;
+  left: -0.5px;
+  border-top: 1px dashed var(--color-black);
+  box-sizing: border-box;
+  width: 895px;
+  height: 1px;
+}
+.bill-to-parent {
+  position: absolute;
+  top: 298px;
+  left: calc(50% - 410px);
+  width: 894px;
+  height: 740px;
+  text-align: left;
+  font-size: var(--font-size-5xl);
+}
+.desktop-89-child,
+.desktop-89-item {
+  position: absolute;
+  top: 578.5px;
+  left: 309.5px;
+  border-top: 1px dashed var(--color-black);
+  box-sizing: border-box;
+  width: 895px;
+  height: 1px;
+}
+.desktop-89-item {
+  top: 690.5px;
+}
+.logo1-1-icon {
+  position: absolute;
+  top: 30px;
+  left: calc(50% - 73px);
+  width: 218px;
+  height: 45px;
+  object-fit: cover;
+}
+.desktop-89 {
+  width: 100%;
+  position: relative;
+  background-color: var(--color-black);
+  height: 1065px;
+  overflow: hidden;
+  text-align: center;
+  font-size: var(--font-size-base);
+  color: var(--color-black);
+  font-family: var(--font-lora);
+}
+
+#space{
+  padding-left: 10px;
+}

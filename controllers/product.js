@@ -6,37 +6,29 @@ const router = express.Router();
 // Read operation - GET /products
 router.get("/", async (req, res) => {
   try {
+    const lowStockProducts = [];
+    const outStockProducts = [];
     const productModel = await Product();
-    const products = await productModel.findAll();
+    const products = await productModel.findAll()
+
+    products.map((val) => {
+	if (val.dataValues.quantity < 10 && val.dataValues.quantity !== 0) {
+		lowStockProducts.push(val);
+	}
+
+	 if ( val.dataValues.quantity === 0 ) {
+		outStockProducts.push(val);
+	}
+    })
     res.status(200).json({
       success: true,
       message: "Products fetched successfully",
-      data: products,
+      totProducts: products,
+      lowProducts: lowStockProducts,
+      outStProducts: outStockProducts 
     });
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-// Read operation - GET /products/categories
-router.get("/categories", async (req, res) => {
-  try {
-    const productModel = await Product();
-    const categories = req.body.map((item) => {
-      return item.category;
-    });
-    const products = await productModel.findAll({
-      where: {
-        category: categories,
-      }
-    });
-    res.status(200).json({
-      success: true,
-      message: "Products fetched successfully",
-      data: products,
-    });
-  } catch (error) {
-    console.error(`Error fetching products with category filter :`, error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -72,7 +64,7 @@ router.post("/", async (req, res) => {
 
 router.post("/bulk", async (req, res) => {
   try {
-    const datas = req.body;
+    const datas = req.body.data;
     const productModel = await Product();
     const productDatas = datas.map(data => {
       return {
@@ -107,15 +99,15 @@ router.post("/bulk", async (req, res) => {
 router.put("/", async (req, res) => {
   try {
     const productModel = await Product();
-    const updateItems = req.body;
-
+    const updateItems = req.body.arr;
+	console.log(updateItems)
     // Array to store promises for updating each item
     const updatePromises = updateItems.map(async (item) => {
-      const { itemNo, quantity, price } = item;
+      const { id, quantity, price } = item;
       const [updatedRows] = await productModel.update({ quantity, price }, {
-        where: { itemNo: itemNo }, // Use itemNo in the where clause
+        where: { id: id }, // Use itemNo in the where clause
       });
-      return { itemNo, updatedRows };
+      return { id, updatedRows };
     });
 
     // Wait for all update operations to complete
@@ -128,7 +120,7 @@ router.put("/", async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Products updated successfully",
-        updatedProducts: updatedProducts.map(result => result.itemNo),
+        updatedProducts: updatedProducts.map(result => result.id),
       });
     } else {
       res.status(404).json({ error: "No products updated" });
@@ -145,9 +137,9 @@ router.delete("/", async (req, res) => {
   try {
     const productModel = await Product();
     const itemsToDelete = req.body; // JSON array of items to delete
-    const itemNos = itemsToDelete.map(item => item.itemNo);
+    console.log(req.body);  
     const deletedProducts = await productModel.destroy({
-      where: { itemNo: itemNos },
+      where: { id: req.body.arr },
     });
     if (deletedProducts > 0) {
       res.status(200).json({ success: true, message: "Products deleted successfully" });

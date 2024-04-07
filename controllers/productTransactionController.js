@@ -3,6 +3,22 @@ import getProductTransactionModel from "../models/productTransaction.js";
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+	 try {
+	 	const productTransaction = await getProductTransactionModel();
+		 const transaction = await productTransaction.findAll();
+		 
+		 res.status(201).json({
+		  success: true,
+		  message: "Done",
+		  trans: transaction,
+		});
+	 } catch (err) {
+	 	 console.error("Error fetching product transaction:", error);
+    	 res.status(500).json({ error: "Internal server error" });
+	 }
+})
+
 // Create operation - POST /productTransactions
 router.post("/", async (req, res) => {
   try {
