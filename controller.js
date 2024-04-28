@@ -6,6 +6,7 @@ import productRoute from "./controllers/product.js";
 import customerTransactionRoute from "./controllers/customerTransactionController.js";
 import productTransactionRoute from "./controllers/productTransactionController.js";
 import billRoute from "./controllers/billController.js";
+import authorizationmanagementRoute from "./controllers/authorizationmanagement.js";
 
 let controller = {};
 
@@ -18,6 +19,7 @@ controller.start = (app) => {
   app.use("/customerTransaction", customerTransactionRoute);
   app.use("/productTransaction", productTransactionRoute);
   app.use("/bill", billRoute);
+  app.use("/authorizationmanagement", authorizationmanagementRoute);
 };
 
 export default controller;

@@ -1,0 +1,24 @@
+GET http://localhost:3000/authorizationmanagement
+
+###
+
+POST http://localhost:3000/authorizationmanagement
+Content-Type: application/json
+
+{
+    "username": "john",
+    "password": "123",
+    "profile": "ADMIN",
+    "email": "none",
+    "location": "OMR"
+}
+
+###
+
+POST http://localhost:3000/authorizationmanagement/login
+Content-Type: application/json
+
+{
+    "username": "john",
+    "password": "123"
+}
