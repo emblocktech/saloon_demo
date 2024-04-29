@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
 	 try {
 	 	const productTransaction = await getProductTransactionModel();
-		 const transaction = await productTransaction.findAll();
+		 const transaction = await productTransaction.findAll({ where: { location: req.headers.location } });
 		 
 		 res.status(201).json({
 		  success: true,

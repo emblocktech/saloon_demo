@@ -12,8 +12,10 @@ import path from "path";
 const router = express.Router();
 
 router.get("/count/total", async (req, res) => {
+	
 	const AppInfo = await getAppInfoModel();
-	const app = await AppInfo.findByPk(1);
+	let id = req.headers.location === "OMR" ? 1 : 2
+	const app = await AppInfo.findByPk(id);
 	res.status(200).json({ success: true, billCount: app.dataValues.totBill })
 })
 
@@ -37,8 +39,9 @@ router.post("/", async (req, res) => {
     
     //Update Bill Count
     
-    const AppInfo = await getAppInfoModel();
-	const app = await AppInfo.findByPk(1)
+  const AppInfo = await getAppInfoModel();
+  let id = req.headers.location === "OMR" ? 1 : 2
+	const app = await AppInfo.findByPk(id)
 	let cnt = app.dataValues.totBill + 1;
 	await app.update({ totBill: cnt })
 

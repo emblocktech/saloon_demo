@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
 	 try {
 	 	const CustomerTransaction = await getCustomerTransactionModel();
-		 const transaction = await CustomerTransaction.findAll();
+		 const transaction = await CustomerTransaction.findAll({ where: { location: req.headers.location } });
 		 
 		 res.status(201).json({
 		  success: true,
@@ -37,7 +37,7 @@ router.get("/download/report/:from/:to", async (req, res) => {
 
 	 	 const CustomerTransaction = await getCustomerTransactionModel();
 	 	 const ProductTransaction = await getProductTransactionModel();
-	 	 const product = await ProductTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] } }})
+	 	 const product = await ProductTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location }})
 		 const transaction = await CustomerTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] } }});
 		 const plainProduct = product.map(el => el.get({ plain: true }))
 		 

@@ -22,3 +22,7 @@ Content-Type: application/json
     "username": "john",
     "password": "123"
 }
+
+###
+
+GET http://localhost:3000/bill/count/total
