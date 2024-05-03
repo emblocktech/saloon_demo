@@ -52,10 +52,12 @@ router.post("/", async (req, res) => {
       totGST,
       bill,
       modeOfPay,
-      location
+      location,
+      billDate
     } = req.body;
     
     //Update Bill Count
+
     
   const AppInfo = await getAppInfoModel();
   let id = req.headers.location === "OMR" ? 1 : 2
@@ -112,7 +114,7 @@ router.post("/", async (req, res) => {
 
     // Log customer transaction
     const CustomerTransaction = await getCustomerTransactionModel();
-    await CustomerTransaction.create({
+    let trans = await CustomerTransaction.create({
       empID,
       customerName,
       customerPhoneNo,
@@ -122,6 +124,11 @@ router.post("/", async (req, res) => {
       modeOfPay,
       location
     });
+
+
+    if (billDate) {
+        await CustomerTransaction.update({ createdAt: new Date(billDate) }, { where: { id: trans.dataValues.id } })
+    }
     
     const transporter = nodemailer.createTransport({
 	  service: "Gmail",
