@@ -10,6 +10,7 @@ const router = express.Router();
 // Create operation - POST /customerTransactions
 
 router.get("/", async (req, res) => {
+	console.log(req.headers.location)
 	 try {
 	 	const CustomerTransaction = await getCustomerTransactionModel();
 		 const transaction = await CustomerTransaction.findAll({ where: { location: req.headers.location } });
@@ -20,7 +21,7 @@ router.get("/", async (req, res) => {
 		  trans: transaction,
 		});
 	 } catch (err) {
-	 	 console.error("Error fetching customer transaction:", error);
+	 	 console.error("Error fetching customer transaction:", err);
     	 res.status(500).json({ error: "Internal server error" });
 	 }
 	

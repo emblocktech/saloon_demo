@@ -4,29 +4,50 @@ import Product from "../models/product.js";
 const router = express.Router();
 
 // Read operation - GET /products
-router.get("/", async (req, res) => {
+router.get("/:location", async (req, res) => {
   try {
     const lowStockProducts = [];
     const outStockProducts = [];
     const productModel = await Product();
-    const products = await productModel.findAll()
+    if (req.params.location === "All") {
+    	const products = await productModel.findAll()
 
-    products.map((val) => {
-	if (val.dataValues.quantity < 10 && val.dataValues.quantity !== 0) {
-		lowStockProducts.push(val);
-	}
+		products.map((val) => {
+		if (val.dataValues.quantity < 10 && val.dataValues.quantity !== 0) {
+			lowStockProducts.push(val);
+		}
 
-	 if ( val.dataValues.quantity === 0 ) {
-		outStockProducts.push(val);
-	}
-    })
-    res.status(200).json({
-      success: true,
-      message: "Products fetched successfully",
-      totProducts: products,
-      lowProducts: lowStockProducts,
-      outStProducts: outStockProducts 
-    });
+		 if ( val.dataValues.quantity === 0 ) {
+			outStockProducts.push(val);
+		}
+		})
+		res.status(200).json({
+		  success: true,
+		  message: "Products fetched successfully",
+		  totProducts: products,
+		  lowProducts: lowStockProducts,
+		  outStProducts: outStockProducts 
+		});
+    } else {
+    	const products = await productModel.findAll({ where: { location: req.params.location } })
+
+		products.map((val) => {
+		if (val.dataValues.quantity < 10 && val.dataValues.quantity !== 0) {
+			lowStockProducts.push(val);
+		}
+
+		 if ( val.dataValues.quantity === 0 ) {
+			outStockProducts.push(val);
+		}
+		})
+		res.status(200).json({
+		  success: true,
+		  message: "Products fetched successfully",
+		  totProducts: products,
+		  lowProducts: lowStockProducts,
+		  outStProducts: outStockProducts 
+		});
+    }
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Internal server error" });

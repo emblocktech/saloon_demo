@@ -8,6 +8,8 @@ import nodemailer from "nodemailer";
 import fs from "fs";
 import ejs from "ejs";
 import path from "path";
+import puppeteer from 'puppeteer';
+import constants from '../constants.js';
 
 const router = express.Router();
 
@@ -20,6 +22,22 @@ router.get("/count/total", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+
+  const generate = async (html, location) => {
+    const browser = await puppeteer.launch({ headless: "new" });
+    const page = await browser.newPage();
+    await page.setContent(html)
+  
+    await page.pdf({
+      path: `./generated_docs/test_${location}.pdf`,
+      width: '1000px',
+      height: '1200px',
+      
+    })
+
+    await browser.close();
+  
+  }
   try {
     // Extract data from request body
     console.log(req.body)
@@ -111,8 +129,8 @@ router.post("/", async (req, res) => {
 	  port: 465,
 	  secure: true,
 	  auth: {
-		user: "femigamarina@gmail.com",
-		pass: "ejms zxtj smgb owgr",
+		user: constants.MAIL_TEST.mail,
+		pass: constants.MAIL_TEST.pass,
 	  },
 	});
 	
@@ -149,12 +167,21 @@ router.post("/", async (req, res) => {
 		address: ""
 	}
 	
-	ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, (err, html) => {
+	ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, async (err, html) => {
+
+    await generate(html, location);
+
 		const mailOptions = {
 		  from: "femigamarina@gmail.com",
 		  to: customer.emailId,
 		  subject: "Bill Information",
-		  html: html,
+		  html: '<h1>FEMIGA</h1><p>Find the details of the bill below:</p>', attachments: [
+        {
+            filename: 'Bill.pdf',
+            path: `./generated_docs/test_${location}.pdf`,
+            cid: 'uniq_bill'
+        }
+      ],
 		};
 		
 		transporter.sendMail(mailOptions, (error, info) => {
