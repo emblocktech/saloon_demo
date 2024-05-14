@@ -27,6 +27,41 @@ router.get("/", async (req, res) => {
 	
 })
 
+router.get("/history/report/:from/:to", async (req, res) => {
+
+	const from = req.params.from
+  	const to = req.params.to
+
+    
+	 try {
+	 	 const CustomerTransaction = await getCustomerTransactionModel();
+	 	 if (from === "*" || to === "*") {
+	 	 	 const transaction = await CustomerTransaction.findAll({ where:{ location: req.headers.location } });
+		 
+			 res.status(201).json({
+			  success: true,
+			  message: "Done",
+			  trans: transaction,
+			});
+	 	 } else {
+   	 	 	 const startDate = new Date(`${from}T00:00:00.000Z`);
+    		 const endDate = new Date(`${to}T18:29:00.000Z`);
+	 	 	 const transaction = await CustomerTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location } });
+		 
+			 res.status(201).json({
+			  success: true,
+			  message: "Done",
+			  trans: transaction,
+			});	
+	 	 }
+	 } catch (err) {
+	 	 console.error("Error fetching customer transaction:", err);
+    	 res.status(500).json({ error: "Internal server error" });
+	 }
+	
+})
+
+
 router.get("/download/report/:from/:to", async (req, res) => {
 	const from = req.params.from
   	const to = req.params.to
@@ -39,7 +74,7 @@ router.get("/download/report/:from/:to", async (req, res) => {
 	 	 const CustomerTransaction = await getCustomerTransactionModel();
 	 	 const ProductTransaction = await getProductTransactionModel();
 	 	 const product = await ProductTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location }})
-		 const transaction = await CustomerTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] } }});
+		 const transaction = await CustomerTransaction.findAll({ where:{ createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location }});
 		 const plainProduct = product.map(el => el.get({ plain: true }))
 		 
 		 const billGrouped = _.groupBy(plainProduct, 'billNo')
@@ -121,11 +156,11 @@ router.get("/report/:from/:to", async (req, res) => {
 	 	 const CustomerTransaction = await getCustomerTransactionModel();
 	 	 const ProductTransaction = await getProductTransactionModel();
 		 if (startDate){
-			var product = await ProductTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] } } });
-			var transaction = await CustomerTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] } } });
+			var product = await ProductTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location } });
+			var transaction = await CustomerTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location } });
 		 } else {
-			var product = await ProductTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] } } });
-			var transaction = await CustomerTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] } } });
+			var product = await ProductTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location } });
+			var transaction = await CustomerTransaction.findAll({ where: { createdAt: { [Op.between]: [startDate, endDate] }, location: req.headers.location } });
 		 }
 		 const plainProduct = product.map(el => el.get({ plain: true }))
 		 

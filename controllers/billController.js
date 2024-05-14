@@ -3,6 +3,7 @@ import getUserModel from '../models/customer.js';
 import getProductModel from '../models/product.js';
 import getCustomerTransactionModel from '../models/customerTransaction.js';
 import getProductTransactionModel from '../models/productTransaction.js';
+import getPosMarinaModel from '../models/posmarina.js';
 import getAppInfoModel from '../models/appinfo.js';
 import nodemailer from "nodemailer";
 import fs from "fs";
@@ -24,7 +25,7 @@ router.get("/count/total", async (req, res) => {
 router.post("/", async (req, res) => {
 
   const generate = async (html, location) => {
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
     const page = await browser.newPage();
     await page.setContent(html)
   
@@ -76,8 +77,16 @@ router.post("/", async (req, res) => {
     // Update product quantities and sold quantities, and log transactions
     const Product = await getProductModel();
     const ProductTransaction = await getProductTransactionModel();
+    let posmarina = await getPosMarinaModel();
+    let totdisc = 0;
     for (const item of bill) {
       const { itemNo, quantity } = item;
+
+      if (!item.disc) {
+        totdisc = totdisc + 0;
+      } else {
+        totdisc = totdisc + parseInt(item.disc);
+      }
 
       const product = await Product.findOne({ where: { itemNo } });
       if (product) {
@@ -85,6 +94,17 @@ router.post("/", async (req, res) => {
           quantity: product.quantity - quantity,
           sold: parseInt(product.sold) + parseInt(quantity)
         });
+
+        let a = {}
+        if (!item.disc) {
+          a = JSON.parse(product.parameter);
+          a.disc = 0;
+        } else {
+          a = JSON.parse(product.parameter);
+          a.disc = item.disc
+        }
+
+        
 
         // Log product transaction
         await ProductTransaction.create({
@@ -94,7 +114,7 @@ router.post("/", async (req, res) => {
           quantity,
           billNo,
 		  category: product.category,
-		  parameter: product.parameter,
+		  parameter: JSON.stringify(a),
 		  location
         });
       } else {
@@ -105,12 +125,25 @@ router.post("/", async (req, res) => {
           quantity,
           billNo,
 		  category: "New",
-		  parameter: "New",
+		  parameter: {
+        disc: item.disc
+      },
 		  location
         });
       }
     }
-    
+
+    let currentDatePos = new Date()
+    if (location === "OMR") {
+      await posmarina.create({
+        receipt_no: billNo,
+        timestamp: currentDatePos,
+        inv_amt: parseInt(billAmount),
+        tax_amt: totGST,
+        dis_amt: totdisc,
+        net_amt: billAmount + totdisc
+      })
+    }
 
     // Log customer transaction
     const CustomerTransaction = await getCustomerTransactionModel();
@@ -155,15 +188,15 @@ router.post("/", async (req, res) => {
 			"retailerMailId": "retailer@example.com"
 			},
 		  "paySummary": {
-			"gstTotal": totGST,
-			"amountTotal": billAmount,
+			"gstTotal": parseFloat(totGST).toFixed(2),
+			"amountTotal": parseFloat(billAmount).toFixed(2),
 			"details": bill.map((val) => ({
 				productName: val.itemName,
 				productQuantity: val.quantity,
-				productPrice: val.price,
-				productDiscount: val.disc,
-				productGst: val.gst,
-				productAmount: val.amount
+				productPrice: parseFloat(val.price).toFixed(2),
+				productDiscount: parseFloat(val.disc).toFixed(2),
+				productGst: parseFloat(val.gst).toFixed(2),
+				productAmount: parseFloat(val.amount).toFixed(2)
 			}))
 		}}
 		

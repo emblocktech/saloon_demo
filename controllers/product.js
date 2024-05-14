@@ -1,5 +1,6 @@
 import express from "express";
 import Product from "../models/product.js";
+import _ from "lodash";
 
 const router = express.Router();
 
@@ -12,6 +13,13 @@ router.get("/:location", async (req, res) => {
     if (req.params.location === "All") {
     	const products = await productModel.findAll()
 
+		const productItemNo = await productModel.findAll({ attributes: ['itemNo'], raw: true })
+		let itemNoArr = _.map(productItemNo, (val, ind) => ({
+			key: ind,
+			text: val.itemNo,
+			value: val.itemNo
+		}))
+		
 		products.map((val) => {
 		if (val.dataValues.quantity < 10 && val.dataValues.quantity !== 0) {
 			lowStockProducts.push(val);
@@ -26,11 +34,19 @@ router.get("/:location", async (req, res) => {
 		  message: "Products fetched successfully",
 		  totProducts: products,
 		  lowProducts: lowStockProducts,
-		  outStProducts: outStockProducts 
+		  outStProducts: outStockProducts,
+		  itemNoDropArr:  itemNoArr
 		});
     } else {
     	const products = await productModel.findAll({ where: { location: req.params.location } })
-
+    	
+    	const productItemNo = await productModel.findAll({ where: { location: req.params.location }, attributes: ['itemNo'], raw: true })
+		let itemNoArr = _.map(productItemNo, (val, ind) => ({
+			key: ind,
+			text: val.itemNo,
+			value: val.itemNo
+		}))
+		
 		products.map((val) => {
 		if (val.dataValues.quantity < 10 && val.dataValues.quantity !== 0) {
 			lowStockProducts.push(val);
@@ -45,7 +61,8 @@ router.get("/:location", async (req, res) => {
 		  message: "Products fetched successfully",
 		  totProducts: products,
 		  lowProducts: lowStockProducts,
-		  outStProducts: outStockProducts 
+		  outStProducts: outStockProducts,
+		  itemNoDropArr:  itemNoArr 
 		});
     }
   } catch (error) {
