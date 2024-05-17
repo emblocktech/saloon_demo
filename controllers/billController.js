@@ -51,6 +51,7 @@ router.post("/", async (req, res) => {
       billNo,
       billAmount,
       totGST,
+      totDisc,
       bill,
       modeOfPay,
       location,
@@ -78,15 +79,9 @@ router.post("/", async (req, res) => {
     const Product = await getProductModel();
     const ProductTransaction = await getProductTransactionModel();
     let posmarina = await getPosMarinaModel();
-    let totdisc = 0;
     for (const item of bill) {
       const { itemNo, quantity } = item;
 
-      if (!item.disc) {
-        totdisc = totdisc + 0;
-      } else {
-        totdisc = totdisc + parseInt(item.disc);
-      }
 
       const product = await Product.findOne({ where: { itemNo } });
       if (product) {
@@ -96,14 +91,13 @@ router.post("/", async (req, res) => {
         });
 
         let a = {}
-        if (!item.disc) {
+        if (!item.discAmt) {
           a = JSON.parse(product.parameter);
           a.disc = 0;
         } else {
           a = JSON.parse(product.parameter);
-          a.disc = item.disc
+          a.disc = parseFloat(item.discAmt.amt) 
         }
-
         
 
         // Log product transaction
@@ -125,9 +119,9 @@ router.post("/", async (req, res) => {
           quantity,
           billNo,
 		  category: "New",
-		  parameter: {
-        disc: item.disc
-      },
+		  parameter: JSON.stringify({
+        disc: item.discAmt ? parseFloat(item.discAmt.amt) : 0,
+      }),
 		  location
         });
       }
@@ -140,8 +134,8 @@ router.post("/", async (req, res) => {
         timestamp: currentDatePos,
         inv_amt: parseInt(billAmount),
         tax_amt: totGST,
-        dis_amt: totdisc,
-        net_amt: billAmount + totdisc
+        dis_amt: totDisc,
+        net_amt: billAmount + totDisc
       })
     }
 
