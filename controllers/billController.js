@@ -1,6 +1,7 @@
 import express from 'express';
 import getUserModel from '../models/customer.js';
 import getProductModel from '../models/product.js';
+import getCustomerModel from '../models/customer.js'
 import getCustomerTransactionModel from '../models/customerTransaction.js';
 import getProductTransactionModel from '../models/productTransaction.js';
 import getPosMarinaModel from '../models/posmarina.js';
@@ -8,40 +9,124 @@ import getAppInfoModel from '../models/appinfo.js';
 import nodemailer from "nodemailer";
 import fs from "fs";
 import ejs from "ejs";
-import path from "path";
 import puppeteer from 'puppeteer';
 import constants from '../constants.js';
 
 const router = express.Router();
 
 router.get("/count/total", async (req, res) => {
-	
 	const AppInfo = await getAppInfoModel();
 	let id = req.headers.location === "OMR" ? 1 : 2
 	const app = await AppInfo.findByPk(id);
 	res.status(200).json({ success: true, billCount: app.dataValues.totBill })
 })
 
-router.post("/", async (req, res) => {
-
+router.get("/download/:location/:billno", async (req,res) =>{
   const generate = async (html, location) => {
     const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
     const page = await browser.newPage();
     await page.setContent(html)
-  
-    await page.pdf({
-      path: `./generated_docs/test_${location}.pdf`,
+    const pdfBuffer = await page.pdf({
       width: '1000px',
       height: '1200px',
-      
     })
-
-    await browser.close();
   
+    await browser.close();
+    return pdfBuffer;
   }
+  const billNo = req.params.billno;
+  const location = req.params.location;
+
+  // get userInfo
+  const CustomerTransaction  = await getCustomerTransactionModel();
+  const custTransaction = (await CustomerTransaction.findAll({where:{billNo:billNo,location:location}}))[0]
+  const date = custTransaction.createdAt;
+  const CustomerInfo = await getCustomerModel();
+  const {emailId} = (await CustomerInfo.findAll({attributes:['emailId'],where:{
+                                                                              customername:custTransaction.customerName,
+                                                                              phonenumber:custTransaction.customerPhoneNo
+                                                                            }
+    }))[0];
+  const userInfo = {
+    moblieNumber: custTransaction.customerPhoneNo,
+    mailID: emailId,
+    name: custTransaction.customerName,
+    address: ""
+  }
+
+  // get product details
+  const ProductTransaction = await getProductTransactionModel()
+  const prdTrans = await ProductTransaction.findAll({where:{billNo:billNo,location:location}}) 
+  const Product = await getProductModel();
+  const prices = await Product.findAll({attributes:['id','itemNo','itemName','price'],where:{itemNo:prdTrans.map((a)=>a.itemNo)}})
+  const bill =  prdTrans.map((val) => {
+    prices.forEach(e=>{
+      if (e.itemNo.toLowerCase() === val.itemNo.toLowerCase()){
+        if (val.price){
+          if (e.itemName.toLowerCase() === val.itemNo.toLowerCase()){
+            val.price = e.price;
+          }
+        }else{
+          val.price = e.price;
+        }
+      }
+    })
+    try{
+      val.disc = (JSON.parse(val.parameter)).disc ?? 0;
+    }catch{
+      val.disc=0;
+    }
+    val.amount = val.price - val.disc; 
+    val.gst = val.amount*0.18;
+
+    ["price","amount","disc","gst"].forEach(i=>{
+      val[i] = parseFloat(val[i]).toFixed(2) ?? "cannot get data";
+    });
+
+    return {
+      productName: val.itemName,
+      productQuantity: val.quantity,
+      productPrice: val.price,
+      productDiscount: val.disc,
+      productGst: val.gst,
+      productAmount: val.amount
+    };
+  })
+  const billAmount = custTransaction.billAmount;
+  const data = {
+    paymentInfo: {
+      paymentMethod: "COD",
+      taxInvoiceNumber: "IT2023001",
+      gstNumber: "GL-0001-0002-0003",
+      purchaseDate: date.toDateString(),
+      orderTime: date.toLocaleTimeString(),
+      retailerContactNumber1: "987654321",
+      retailerContactNumber2: "4567890123",
+      retailerMailId: "retailer@example.com",
+    },
+    paySummary: {
+      gstTotal: parseFloat(billAmount * 0.18).toFixed(2),
+      amountTotal: parseFloat(billAmount).toFixed(2),
+      details: bill,
+    },
+  };
+
+  // rendering html then to pdf and send to client
+  ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, async (err, html) => {
+    try{
+      const pdfBuffer = await generate(html, location);
+      res.contentType("application/pdf");
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.error("Error processing billing data:", error);
+      res.status(500).json({ error: "ERROR processing bill" });
+    }
+  })
+})
+router.post("/", async (req, res) => {
+
   try {
     // Extract data from request body
-    console.log(req.body)
     const {
       empID,
       customerName,
@@ -59,13 +144,11 @@ router.post("/", async (req, res) => {
     } = req.body;
     
     //Update Bill Count
-
-    
-  const AppInfo = await getAppInfoModel();
-  let id = req.headers.location === "OMR" ? 1 : 2
-	const app = await AppInfo.findByPk(id)
-	let cnt = app.dataValues.totBill + 1;
-	await app.update({ totBill: cnt })
+    const AppInfo = await getAppInfoModel();
+    let id = req.headers.location === "OMR" ? 1 : 2
+    const app = await AppInfo.findByPk(id)
+    let cnt = app.dataValues.totBill + 1;
+    await app.update({ totBill: cnt })
 
     // Update customer points
     const Customer = await getUserModel();
@@ -202,7 +285,21 @@ router.post("/", async (req, res) => {
 	}
 	
 	ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, async (err, html) => {
+    const generate = async (html, location) => {
+      const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
+      const page = await browser.newPage();
+      await page.setContent(html)
+      const path = `./generated_docs/test_${location}.pdf`;
+      await page.pdf({
+        path: path,
+        width: '1000px',
+        height: '1200px',
+        
+      })
 
+      await browser.close();
+      return path;
+    }
     await generate(html, location);
 
 		const mailOptions = {
@@ -234,5 +331,6 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Please fill all the values" });
   }
 });
+
 
 export default router;

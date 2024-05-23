@@ -1,4 +1,4 @@
-const TARGET = "LOCAL" // LOOCAL or PRO
+const TARGET = "LOCAL" // LOCAL or PRO
 
 const DB = {
     database: "saloon",
@@ -19,4 +19,4 @@ const MAIL_PRO = {
     pass: "ejms zxtj smgb owgr"
 }
 
-export default { DB, MAIL_PRO, MAIL_TEST };
+export default { DB, MAIL_PRO, MAIL_TEST,TARGET };

@@ -7,7 +7,31 @@ import cors from "cors";
 import morgan from "morgan";
 import controller from "./controller.js";
 import fs from 'fs'
+import getAuthMan from './models/authorizationmanagement.js';
+import constants from "./constants.js";
+import bcrypt from "bcrypt";
+async function checkAdmin(){
+    const authMan = await getAuthMan(); 
+    var flag = false;
+    const creds = await authMan.findAll();
+    creds.forEach((e)=>{
+        console.log(e.username)
+        if (e.username == "admin"){
+            flag=true;
+        }
+    });
+    if (!flag){
+        await authMan.create({
+            username: "admin",
+            password: await bcrypt.hash("admin",10),
+            profile: "SuperAdmin",
+            email: "sriramkesavan44@gmail.com",
+            location: "All"
+        })
+    }
+}
 
+checkAdmin();
 const app = express();
 
 app.use(morgan("short"));
@@ -25,20 +49,21 @@ db.authenticate()
     });
 
 controller.start(app);
+let server;
 
 // const privateKey = fs.readFileSync('/etc/letsencrypt/live/pos.emblock.in/privkey.pem', 'utf8');
 // const certificate = fs.readFileSync('/etc/letsencrypt/live/pos.emblock.in/cert.pem', 'utf8');
 // const ca = fs.readFileSync('/etc/letsencrypt/live/pos.emblock.in/chain.pem', 'utf8');
-//
+
 // const credentials = {
-//    key: privateKey,
-//    cert: certificate,
-//    ca: ca
+// key: privateKey,
+// cert: certificate,
+// ca: ca
 // };
 
-//const server = https.createServer(credentials, app);
+// server = https.createServer(credentials, app);
+server = http.Server(app);
 
-const server = http.Server(app);
 var PORT = process.env.PORT || 3000;
 // Start the server
 server.listen(PORT, () => {
