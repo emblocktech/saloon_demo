@@ -22,106 +22,107 @@ router.get("/count/total", async (req, res) => {
 })
 
 router.get("/download/:location/:billno", async (req,res) =>{
-  const generate = async (html, location) => {
-    const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
-    const page = await browser.newPage();
-    await page.setContent(html)
-    const pdfBuffer = await page.pdf({
-      width: '1000px',
-      height: '1200px',
-    })
-  
-    await browser.close();
-    return pdfBuffer;
-  }
-  const billNo = req.params.billno;
-  const location = req.params.location;
+  try{
+    const generate = async (html, location) => {
+      const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
+      const page = await browser.newPage();
+      await page.setContent(html)
+      const pdfBuffer = await page.pdf({
+        width: '1000px',
+        height: '1200px',
+      })
+    
+      await browser.close();
+      return pdfBuffer;
+    }
+    const billNo = req.params.billno;
+    const location = req.params.location;
 
-  // get userInfo
-  const CustomerTransaction  = await getCustomerTransactionModel();
-  const custTransaction = (await CustomerTransaction.findAll({where:{billNo:billNo,location:location}}))[0]
-  const date = custTransaction.createdAt;
-  const CustomerInfo = await getCustomerModel();
-  const {emailId} = (await CustomerInfo.findAll({attributes:['emailId'],where:{
-                                                                              customername:custTransaction.customerName,
-                                                                              phonenumber:custTransaction.customerPhoneNo
-                                                                            }
-    }))[0];
-  const userInfo = {
-    moblieNumber: custTransaction.customerPhoneNo,
-    mailID: emailId,
-    name: custTransaction.customerName,
-    address: ""
-  }
+    // get userInfo
+    const CustomerTransaction  = await getCustomerTransactionModel();
+    const custTransaction = (await CustomerTransaction.findAll({where:{billNo:billNo,location:location}}))[0]
+    const date = custTransaction.createdAt;
+    const CustomerInfo = await getCustomerModel();
+    const {emailId} = (await CustomerInfo.findAll({attributes:['emailId'],where:{
+                                                                                customername:custTransaction.customerName,
+                                                                                phonenumber:custTransaction.customerPhoneNo
+                                                                              }
+      }))[0];
+    const userInfo = {
+      moblieNumber: custTransaction.customerPhoneNo,
+      mailID: emailId,
+      name: custTransaction.customerName,
+      address: ""
+    }
 
-  // get product details
-  const ProductTransaction = await getProductTransactionModel()
-  const prdTrans = await ProductTransaction.findAll({where:{billNo:billNo,location:location}}) 
-  const Product = await getProductModel();
-  const prices = await Product.findAll({attributes:['id','itemNo','itemName','price'],where:{itemNo:prdTrans.map((a)=>a.itemNo)}})
-  const bill =  prdTrans.map((val) => {
-    prices.forEach(e=>{
-      if (e.itemNo.toLowerCase() === val.itemNo.toLowerCase()){
-        if (val.price){
-          if (e.itemName.toLowerCase() === val.itemNo.toLowerCase()){
+    // get product details
+    const ProductTransaction = await getProductTransactionModel()
+    const prdTrans = await ProductTransaction.findAll({where:{billNo:billNo,location:location}}) 
+    const Product = await getProductModel();
+    const prices = await Product.findAll({attributes:['id','itemNo','itemName','price'],where:{itemNo:prdTrans.map((a)=>a.itemNo)}})
+    const bill =  prdTrans.map((val) => {
+      prices.forEach(e=>{
+        if (e.itemNo.toLowerCase() === val.itemNo.toLowerCase()){
+          if (val.price){
+            if (e.itemName.toLowerCase() === val.itemNo.toLowerCase()){
+              val.price = e.price;
+            }
+          }else{
             val.price = e.price;
           }
-        }else{
-          val.price = e.price;
         }
+      })
+      try{
+        val.disc = (JSON.parse(val.parameter)).disc ?? 0;
+      }catch{
+        val.disc=0;
       }
+      val.amount = val.price - val.disc; 
+      val.gst = val.amount*0.18;
+
+      ["price","amount","disc","gst"].forEach(i=>{
+        val[i] = parseFloat(val[i]).toFixed(2) ?? "cannot get data";
+      });
+
+      return {
+        productName: val.itemName,
+        productQuantity: val.quantity,
+        productPrice: val.price,
+        productDiscount: val.disc,
+        productGst: val.gst,
+        productAmount: val.amount
+      };
     })
-    try{
-      val.disc = (JSON.parse(val.parameter)).disc ?? 0;
-    }catch{
-      val.disc=0;
-    }
-    val.amount = val.price - val.disc; 
-    val.gst = val.amount*0.18;
-
-    ["price","amount","disc","gst"].forEach(i=>{
-      val[i] = parseFloat(val[i]).toFixed(2) ?? "cannot get data";
-    });
-
-    return {
-      productName: val.itemName,
-      productQuantity: val.quantity,
-      productPrice: val.price,
-      productDiscount: val.disc,
-      productGst: val.gst,
-      productAmount: val.amount
+    const billAmount = custTransaction.billAmount;
+    const data = {
+      paymentInfo: {
+        paymentMethod: "COD",
+        taxInvoiceNumber: "IT2023001",
+        gstNumber: "GL-0001-0002-0003",
+        purchaseDate: date.toDateString(),
+        orderTime: date.toLocaleTimeString(),
+        retailerContactNumber1: "987654321",
+        retailerContactNumber2: "4567890123",
+        retailerMailId: "retailer@example.com",
+      },
+      paySummary: {
+        gstTotal: parseFloat(billAmount * 0.18).toFixed(2),
+        amountTotal: parseFloat(billAmount).toFixed(2),
+        details: bill,
+      },
     };
-  })
-  const billAmount = custTransaction.billAmount;
-  const data = {
-    paymentInfo: {
-      paymentMethod: "COD",
-      taxInvoiceNumber: "IT2023001",
-      gstNumber: "GL-0001-0002-0003",
-      purchaseDate: date.toDateString(),
-      orderTime: date.toLocaleTimeString(),
-      retailerContactNumber1: "987654321",
-      retailerContactNumber2: "4567890123",
-      retailerMailId: "retailer@example.com",
-    },
-    paySummary: {
-      gstTotal: parseFloat(billAmount * 0.18).toFixed(2),
-      amountTotal: parseFloat(billAmount).toFixed(2),
-      details: bill,
-    },
-  };
 
-  // rendering html then to pdf and send to client
-  ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, async (err, html) => {
-    try{
-      const pdfBuffer = await generate(html, location);
-      res.contentType("application/pdf");
-      res.send(pdfBuffer);
-    } catch (error) {
-      console.error("Error processing billing data:", error);
-      res.status(500).json({ error: "ERROR processing bill" });
-    }
-  })
+    // rendering html then to pdf and send to client
+    ejs.renderFile("./bill_template.ejs",  { ...data, userInfo }, async (err, html) => {
+      
+        const pdfBuffer = await generate(html, location);
+        res.contentType("application/pdf");
+        res.send(pdfBuffer);
+    })
+  } catch (error) {
+    console.error("Error processing billing data:", error);
+    res.status(500).json({ error: "ERROR processing bill" });
+  }
 })
 router.post("/", async (req, res) => {
 

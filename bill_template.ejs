@@ -388,7 +388,7 @@
 
 		.sno-parent {
 			position: absolute;
-			top: 305px;
+			top: 255px;
 			left: 25px;
 			width: 842px;
 			display: flex;
@@ -435,7 +435,7 @@
 
 		.parent {
 			position: relative;
-			top: 360px;
+			top: 280px;
 			left: 25px;
 			width: 842px;
 			display: flex;
@@ -488,20 +488,22 @@
 		}
 
 		.months-warranty-bought-container {
-			position: absolute;
-			top: 510px;
-			left: 39px;
-			font-size: var(--font-size-xl);
+			position: relative;
+			top: 280px;
+			left: 55px;
+			width: 842px;
 			display: inline-block;
-			width: 797px;
-			height: 177px;
+			align-items: left;
+			justify-content:left;
+			gap: 29px;
+			text-align: left;
+			font-size: var(--font-size-xl);
 		}
 
 		.terms-conditions,
 		.thank-you-and {
-			position: absolute;
-			display: inline-block;
-			height: 25px;
+			text-align: center;
+			justify-content: center;
 		}
 
 		.terms-conditions {
@@ -687,7 +689,7 @@
 					</div>
 				</div>
 				<%}) %>
-					<div class="total-parent">
+					<div class="parent">
 						<div class="total">Total:</div>
 						<div class="div9">
 							<%=paySummary.gstTotal%>
@@ -695,27 +697,30 @@
 						<div class="div10">
 							<%=paySummary.amountTotal%>
 						</div>
-					</div>
+					</div><br><br>
 					<div class="months-warranty-bought-container">
-						<p class="p">* 6 months warranty bought at M. R. P.:</p>
-						<p class="p" id="space">
-							In case of manufacturing defect product (like zipper and stitching
-							defect) will be repaired/refinished at free of charge.
-						</p>
-						<p class="p">
-							* This warranty does not guarantee exchange of the product.
-						</p>
-						<p class="p">
-							* Original cash memo must be preserved and produced along with the
-							product.
-						</p>
-						<p class="p">
-							* Decisions regarding determination of the nature of claimed defects
-							and applicability of this warranty entirely lies with the company.
-						</p>
+						<div class="terms-conditions"><b >TERMS & CONDITIONS</b></div>
+						<ul>
+							<li><p class="p">6 months warranty bought at M. R. P.</p></li>
+							<li><p class="p" id="space">
+								In case of manufacturing defect product (like zipper and stitching
+								defect) will be repaired/refinished at free of charge.
+							</p></li>
+							<li><p class="p">
+								This warranty does not guarantee exchange of the product.
+							</p></li>
+							<li><p class="p">
+								Original cash memo must be preserved and produced along with the
+								product.
+							</p></li>
+							<li><p class="p">
+								Original cash memo must be preserved and produced along with the
+								product.
+							</p></li>
+						</ul>
+						<div class="thank-you-and"><b >THANK YOU AND PLEASE VISIT AGAIN</b></div>
+
 					</div>
-					<b class="terms-conditions">TERMS & CONDITIONS</b>
-					<b class="thank-you-and">THANK YOU AND PLEASE VISIT AGAIN</b>
 					<div class="group-child"></div>
 		</div>
 		<div class="desktop-89-child"></div>
